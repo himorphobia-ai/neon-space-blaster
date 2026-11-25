@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEON VANGUARD // Retro Space Blaster</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="#play" class="brand-logo"><span class="heart-mark">♥</span> NEON <span>VANGUARD</span></a>
+      <div class="nav-links">
+        <a href="#play">Play</a>
+        <a href="#features">Features</a>
+        <a href="#guide">Guide</a>
+        <a href="#bosses">Bosses</a>
+        <a href="#records">Records</a>
+      </div>
+      <div class="nav-cta-group">
+        <span class="nav-high-pill">BEST: <strong id="navHighScore">000000</strong></span>
+        <a href="#play" id="navPlayBtn" class="nav-play-btn">PLAY NOW</a>
+      </div>
+    </div>
+  </nav>
+
+  <section id="play" class="hero-arcade">
+    <div class="hero-header">
+      <div class="hero-kicker">WEB ARCADE · UNDERTALE-INSPIRED WAVE SHOOTER</div>
+      <h2 class="hero-subtitle">Pilot with <b>Arrow Keys</b>, dodge <b>Cyan/Orange</b> patterns, <b>ACT &amp; SPARE</b> enemies, and survive <b>Battle Box</b> bosses.</h2>
+    </div>
+
+    <div id="cabinet" class="cabinet">
+    <header class="hud-bar">
+      <div class="hud-group">
+        <div class="hud-cell">
+          <span class="hud-label">SCORE</span>
+          <span id="scoreVal" class="hud-value cyan">000000</span>
+        </div>
+        <div class="hud-cell">
+          <span class="hud-label">HIGH</span>
+          <span id="highScoreVal" class="hud-value amber">000000</span>
+        </div>
+        <div class="hud-cell">
+          <span class="hud-label">COMBO</span>
+          <span id="comboVal" class="hud-value magenta">x1</span>
+          <div class="combo-bar-wrap">
+            <div id="comboFill" class="combo-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-center">
+        <div class="wave-badge">WAVE <span id="waveVal">01</span></div>
+        <div id="soulBadge" class="soul-badge red">♥ RED SOUL</div>
+        <div class="spared-badge">MERCY <span id="sparedVal">0</span></div>
+        <div id="weaponBadge" class="weapon-badge">PULSE</div>
+        <div id="ostBadge" class="ost-badge">OST: READY</div>
+      </div>
+
+      <div class="hud-group right">
+        <div class="hud-cell">
+          <span class="hud-label">HULL</span>
+          <div id="livesVal" class="pips"></div>
+        </div>
+        <div class="hud-cell">
+          <span class="hud-label">EMP</span>
+          <div id="bombsVal" class="pips"></div>
+        </div>
+        <div class="hud-actions">
+          <button id="mouseBtn" class="icon-btn" title="Toggle Mouse / Touch Steering (Q)">MOUSE: OFF</button>
+          <button id="autoFireBtn" class="icon-btn active" title="Toggle Auto-Fire (F)">AUTO: ON</button>
+          <button id="crtBtn" class="icon-btn active" title="Toggle CRT Scanlines (C)">CRT</button>
+          <button id="bgmBtn" class="icon-btn active" title="Toggle Music OST (N)">BGM: ON</button>
+          <button id="muteBtn" class="icon-btn active" title="Mute / Unmute All Audio (M)">SFX</button>
+          <button id="theaterBtn" class="icon-btn" title="Toggle Theater Mode">THEATER</button>
+          <button id="pauseBtn" class="icon-btn" title="Pause (P)">PAUSE</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="stage-wrap">
+      <canvas id="gameCanvas" width="960" height="640"></canvas>
+      <div id="crtOverlay" class="crt-overlay" aria-hidden="true"></div>
+
+      <!-- Boss HP Bar -->
+      <div id="bossHud" class="boss-hud hidden">
+        <div class="boss-title-row">
+          <span id="bossName" class="boss-name">CORE SENTINEL</span>
+          <span id="bossPhase" class="boss-phase">PHASE 1</span>
+        </div>
+        <div class="boss-bar-track">
+          <div id="bossBarFill" class="boss-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Warning Banner -->
+      <div id="bannerOverlay" class="banner-overlay hidden">
+        <div id="bannerText" class="banner-text">WAVE 01</div>
+        <div id="bannerSub" class="banner-sub">HOSTILES INBOUND</div>
+      </div>
+
+      <!-- Undertale Battle Dialogue Box -->
+      <div id="battleBox" class="ut-dialogue hidden">
+        <span id="battleBoxText">* Filled with DETERMINATION.</span>
+      </div>
+
+      <!-- Start Screen -->
+      <section id="startModal" class="modal-overlay">
+        <div class="modal-card">
+          <div class="logo-kicker">RETRO ARCADE EDITION</div>
+          <h1 class="game-title">NEON <span>VANGUARD</span></h1>
+          <p class="tagline">Blast through synthwave waves, chain combos, collect upgrades, and survive multi-phase bosses.</p>
+
+          <div class="controls-grid">
+            <div class="ctrl-item"><kbd>↑ ↓ ← →</kbd> / <kbd>WASD</kbd><span>Steer SOUL / Jump (Blue)</span></div>
+            <div class="ctrl-item"><kbd>Space</kbd> / <kbd>V</kbd><span>ACT / SPARE (Yellow ★)</span></div>
+            <div class="ctrl-item"><kbd>Shift</kbd><span>Hyper Dash (i-frames)</span></div>
+            <div class="ctrl-item"><kbd>X</kbd> / <kbd>E</kbd><span>EMP Pulse Bomb</span></div>
+            <div class="ctrl-item"><kbd>F</kbd> / <kbd>Z</kbd><span>Auto-Fire (ON) / Manual</span></div>
+            <div class="ctrl-item"><kbd>Q</kbd> / <kbd>P</kbd><span>Mouse Steer / Pause</span></div>
+          </div>
+
+          <div class="powerup-legend">
+            <span class="legend-pill cyan">CYAN = Stand Still</span>
+            <span class="legend-pill orange">ORANGE = Keep Moving</span>
+            <span class="legend-pill yellow">✦ SAVE = Heal +1</span>
+            <span class="legend-pill magenta">♪ DOOM + FINALE OST</span>
+          </div>
+
+          <div class="btn-row">
+            <button id="startBtn" class="primary-btn">LAUNCH MISSION</button>
+            <button id="startSansBtn" class="sans-btn">⚡ SANS BOSS FIGHT</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pause Screen -->
+      <section id="pauseModal" class="modal-overlay hidden">
+        <div class="modal-card compact">
+          <h2 class="modal-heading cyan">SYSTEM PAUSED</h2>
+          <p class="tagline">Take a breather, pilot.</p>
+          <div class="btn-row">
+            <button id="resumeBtn" class="primary-btn">RESUME</button>
+            <button id="restartPauseBtn" class="secondary-btn">RESTART</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Game Over Screen -->
+      <section id="gameOverModal" class="modal-overlay hidden">
+        <div class="modal-card compact">
+          <div class="logo-kicker magenta">SIGNAL LOST</div>
+          <h2 class="modal-heading magenta">GAME OVER</h2>
+          <div class="stats-summary">
+            <div><span>FINAL SCORE</span><strong id="finalScore" class="cyan">0</strong></div>
+            <div><span>HIGH SCORE</span><strong id="finalHighScore" class="amber">0</strong></div>
+            <div><span>WAVE REACHED</span><strong id="finalWave" class="lime">1</strong></div>
+            <div><span>MAX COMBO</span><strong id="finalCombo" class="magenta">x1</strong></div>
+          </div>
+          <div id="newHighBadge" class="new-high hidden">★ NEW HIGH SCORE ★</div>
+          <div class="btn-row">
+            <button id="restartBtn" class="primary-btn">PLAY AGAIN</button>
+            <button id="restartSansBtn" class="sans-btn">⚡ FIGHT SANS</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="control-strip">
+      <span>MOVE: <b>Arrows / WASD</b></span>
+      <span>ACT / SPARE: <b>Space / V</b></span>
+      <span>DASH: <b>Shift</b></span>
+      <span>EMP: <b>X / E</b></span>
+      <span>CYAN: <b>Stop</b> · ORANGE: <b>Move</b></span>
+    </footer>
+    </div>
+  </section>
+
+  <main class="site-content">
+    <section id="features" class="site-section">
+      <div class="section-head">
+        <span class="section-kicker">CORE GAMEPLAY</span>
+        <h2>DETERMINATION MEETS NEON ARCADE</h2>
+      </div>
+      <div class="cards-grid four">
+        <article class="info-card cyan-card">
+          <div class="card-icon">♥</div>
+          <h3>RED &amp; BLUE SOUL</h3>
+          <p>Fly freely as the <strong>RED SOUL</strong>, then switch to <strong>BLUE SOUL</strong> gravity inside Boss Battle Boxes to jump over sliding bone barriers.</p>
+        </article>
+        <article class="info-card yellow-card">
+          <div class="card-icon">★</div>
+          <h3>ACT, MERCY &amp; SPARE</h3>
+          <p>Pulse <strong>Space / V</strong> to ACT or weaken enemies until they turn <strong>YELLOW</strong>, then SPARE them for <strong>2× score</strong> and healing SAVE stars.</p>
+        </article>
+        <article class="info-card orange-card">
+          <div class="card-icon">⚡</div>
+          <h3>CYAN &amp; ORANGE RULES</h3>
+          <p>Read the color cues: <strong>CYAN</strong> attacks pass harmlessly when you stand still; <strong>ORANGE</strong> attacks pass harmlessly while you keep moving.</p>
+        </article>
+        <article class="info-card magenta-card">
+          <div class="card-icon">🚀</div>
+          <h3>UPGRADES &amp; EMP</h3>
+          <p>Chain combos up to <strong>x10</strong>, equip Spread Shot, Rapid Overdrive, Plasma Lance, Aegis Shield, and clear bullet curtains with <strong>EMP Bombs</strong>.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="guide" class="site-section">
+      <div class="section-head">
+        <span class="section-kicker">FLIGHT MANUAL</span>
+        <h2>CONTROLS &amp; POWER-UPS</h2>
+      </div>
+      <div class="guide-split">
+        <div class="panel-box">
+          <h3>PILOT CONTROLS</h3>
+          <ul class="key-list">
+            <li><kbd>↑ ↓ ← →</kbd> or <kbd>WASD</kbd><span>Steer ship / Jump in Blue SOUL mode</span></li>
+            <li><kbd>Space</kbd> or <kbd>V</kbd><span>ACT / SPARE yellow enemies &amp; bosses</span></li>
+            <li><kbd>Shift</kbd><span>Hyper Dash with invulnerability frames</span></li>
+            <li><kbd>X</kbd> or <kbd>E</kbd><span>Trigger EMP Pulse Bomb</span></li>
+            <li><kbd>F</kbd> / <kbd>Z</kbd><span>Toggle Auto-Fire / Manual Fire</span></li>
+            <li><kbd>Q</kbd> / <kbd>P</kbd> / <kbd>M</kbd><span>Mouse Steer / Pause / Mute SFX</span></li>
+          </ul>
+        </div>
+        <div class="panel-box">
+          <h3>ARSENAL &amp; PICKUPS</h3>
+          <div class="pickup-grid">
+            <div class="pickup-item"><span class="badge cyan">S</span><div><strong>Spread Shot</strong><small>5-way neon fan cannon</small></div></div>
+            <div class="pickup-item"><span class="badge lime">R</span><div><strong>Rapid Overdrive</strong><small>Supercharged fire rate</small></div></div>
+            <div class="pickup-item"><span class="badge magenta">L</span><div><strong>Plasma Lance</strong><small>Twin piercing heavy bolts</small></div></div>
+            <div class="pickup-item"><span class="badge blue">H</span><div><strong>Aegis Shield</strong><small>Absorbs 1 hit with shockwave</small></div></div>
+            <div class="pickup-item"><span class="badge amber">B</span><div><strong>EMP Charge</strong><small>Adds +1 screen-clearing bomb</small></div></div>
+            <div class="pickup-item"><span class="badge yellow">✦</span><div><strong>SAVE Star</strong><small>Restores +1 Hull with DETERMINATION</small></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bosses" class="site-section">
+      <div class="section-head">
+        <span class="section-kicker">SECTOR THREATS</span>
+        <h2>BOSSES EVERY 3 WAVES</h2>
+      </div>
+      <div class="cards-grid three">
+        <article class="info-card cyan-card">
+          <div class="boss-tag">WAVE 03 // FINALE OST</div>
+          <h3>SANS (BAD TIME)</h3>
+          <p>Dodges your shots with <strong>MISS</strong>, slams your <strong>BLUE SOUL</strong> into Battle Box walls, fires <strong>Gaster Blaster</strong> crosses &amp; spinning wheels, and drops a fake SPARE!</p>
+        </article>
+        <article class="info-card magenta-card">
+          <div class="boss-tag">WAVE 06 // FINALE OST</div>
+          <h3>CORE SENTINEL</h3>
+          <p>Sweeping neon dreadnought with aimed fan volleys, spiral bursts, Gaster-style vertical blaster beams, and Battle Box bone waves.</p>
+        </article>
+        <article class="info-card amber-card">
+          <div class="boss-tag">WAVE 09+ // FINALE OST</div>
+          <h3>BONE TITAN &amp; OVERLORD</h3>
+          <p>High-armor colossi combining Cyan/Orange bone corridors with rapid phase transitions while <strong>Undertale Finale OST</strong> blasts.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="records" class="site-section">
+      <div class="section-head">
+        <span class="section-kicker">LOCAL SAVE DATA</span>
+        <h2>PILOT RECORDS</h2>
+      </div>
+      <div class="records-bar">
+        <div class="record-stat"><span>HIGH SCORE</span><strong id="siteBestScore" class="amber">000000</strong></div>
+        <div class="record-stat"><span>HIGHEST WAVE</span><strong id="siteBestWave" class="lime">01</strong></div>
+        <div class="record-stat"><span>MOST SPARED</span><strong id="siteBestMercy" class="yellow">0</strong></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>NEON VANGUARD // Retro Arcade Edition</span>
+    <span>100% Zero-Install HTML5 Canvas &amp; Procedural Web Audio</span>
+  </footer>
+
+  <script src="src/audio.js"></script>
+  <script src="src/entities.js"></script>
+  <script src="src/game.js"></script>
+</body>
+</html>
